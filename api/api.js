@@ -90,7 +90,7 @@ app.use(compression());
 
 
 
-const initializePassport = require("../backend/authentication/passport-config");
+const initializePassport = require("./passport-config");
 
 //for geting movies details
 //const  fetchmovies = require('./movieServer');

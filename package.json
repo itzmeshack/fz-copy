@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon backend/authentication/auth.js"
+    "dev": "nodemon api/api.js"
   },
   "author": "Meshack omonzogebe",
   "license": "ISC",
