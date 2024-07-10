@@ -1,9 +1,10 @@
 {
-  "name": "movies_stage_1",
+"name": "fz-copy",
   "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "dev": "nodemon api/api.js"
+ "main": "api/app.js",
+   "scripts": {
+    "dev": "nodemon api/api.js",
+     "build": "echo 'No build step needed'"
   },
   "author": "Meshack omonzogebe",
   "license": "ISC",
