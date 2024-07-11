@@ -4,13 +4,23 @@
     {
       "src": "api/app.js",
       "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/public/(.*)",
-      "dest": "/public/$1"
     },
+
+    {
+      "src": "public/**/*",
+      "use": "@vercel/static"
+    },
+    
+    {
+
+    "src": "views/**/*",
+    "use": "@vercel/static"
+  }
+  ],
+
+  
+  "routes": [
+    
     {
       "src": "/(.*)",
       "dest": "/api/app.js"
