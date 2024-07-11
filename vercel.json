@@ -17,7 +17,7 @@
     }
   ],
   "env": {
-    "SESSION_SECRET": "@session_secret",
-    "API_KEY": "@api_key"
+    "SESSION_SECRET": "@session_secret"
+  
   }
 }
