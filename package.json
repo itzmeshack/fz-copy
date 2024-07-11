@@ -7,7 +7,7 @@
     "start": "node api/app.js",  
     "build": "echo 'No build step needed'"
   },
-  "author": "Meshack omonzogebe",
+  "author": "Meshack Omonzogebe",
   "license": "ISC",
   "dependencies": {
     "apicache": "^1.6.3",
