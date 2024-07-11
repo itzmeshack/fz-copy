@@ -44,10 +44,10 @@ const helmet = require("helmet");
 
 
 const apicache = require('apicache');
-let cache = apicache.middleware;
+const  cache = apicache.middleware;
 
 
-let cacheDuration = '5 minutes';
+const cacheDuration = '5 minutes';
 // Apply cache middleware to routes
 
 
@@ -82,6 +82,16 @@ app.use(compression());
 
 
 
+// Example error handling
+app.use((err, req, res, next) => {
+  if (err instanceof apicache.Error) {
+      // Handle apicache-specific errors
+      res.status(500).send('Apicache error: ' + err.message);
+  } else {
+      // Handle other errors
+      res.status(500).send('Internal Server Error');
+  }
+});
 
 
 
