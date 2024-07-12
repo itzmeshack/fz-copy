@@ -42,7 +42,7 @@ const helmet = require("helmet");
 
 
 
-
+/*
 const apicache = require('apicache');
 const  cache = apicache.middleware;
 
@@ -50,7 +50,7 @@ const  cache = apicache.middleware;
 const cacheDuration = '5 minutes';
 // Apply cache middleware to routes
 
-
+*/
 
 
 
