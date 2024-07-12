@@ -41,16 +41,17 @@ const helmet = require("helmet");
 /* we coming back to cache so we can see how we can efficiently use it through out the server/*/
 
 
+// Apply cache middleware to routes
 
-/*
+
 const apicache = require('apicache');
-const  cache = apicache.middleware;
 
 
 const cacheDuration = '5 minutes';
-// Apply cache middleware to routes
 
-*/
+const  cache = apicache.middleware;
+
+
 
 
 
