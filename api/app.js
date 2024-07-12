@@ -241,7 +241,7 @@ app.get('/watch/tv/:tvId', checkAuthenticated, async (req, res) => {
 
 let movies = [];
 
-app.get("/home", checkAuthenticated,  /*cache(cacheDuration)*/ async (req, res) => {
+app.get("/home",   /*cache(cacheDuration)*/ async (req, res) => {
   try {
     const [
       response,
