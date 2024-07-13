@@ -113,7 +113,7 @@ initializePassport(
   (id) => user.find((user) => user.id === id)
 );
 
-const port = 5000;
+const PORT = process.env.PORT || 5000;
 
 
 
@@ -135,8 +135,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.listen(port, () => {
-  console.log(`server running successfully on ${port}`);
+app.listen(PORT, () => {
+  console.log(`server running successfully on ${Port}`);
 });
 
 app.set("view-engine", "ejs");
