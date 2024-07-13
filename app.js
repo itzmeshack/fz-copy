@@ -101,7 +101,7 @@ app.use((err, req, res, next) => {
 
 
 
-const initializePassport = require("./passport-config");
+const initializePassport = require("./api/passport-config");
 
 //for geting movies details
 //const  fetchmovies = require('./movieServer');
@@ -328,7 +328,7 @@ app.get("/home",   /*cache(cacheDuration)*/ async (req, res) => {
        user: req.user 
       });
     } else {
-      res.render("home.ejs", { movies: [] });
+      res.render("home.ejs", { movies: [], user: req.user });
     }
   } catch (error) {
     console.error("Error fetching data:", error);
