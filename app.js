@@ -136,7 +136,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.listen(PORT, () => {
-  console.log(`server running successfully on ${Port}`);
+  console.log(`server running successfully on ${PORT}`);
 });
 
 app.set("view-engine", "ejs");
