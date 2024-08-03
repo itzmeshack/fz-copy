@@ -96,8 +96,12 @@
             <ul class="user-mobile-con">
   
           
-            <li  class="user-list" ><a class="user-fav" href="/favourite"><span><i  style="color: yellow;" class="fa-regular fa-star"></i></span> Favourite</a></li>
-            <li  class="user-list-log"><a class="user-log" href="/login">Logout</a></li>
+              <li  class="user-list" >  <a class="user-fav" href="/favourite">
+                <span><i class="fa-regular fa-star" style="color: yellow; font-weight: 400; font-size: 18px;"></i></span>
+                  <p style="color: yellow; position: relative; left: 25px;">Favourite</p>
+             
+            </a>
+          </li>            <li  class="user-list-log"><a class="user-log" href="/login">Logout</a></li>
           </ul>
           </div>
   
@@ -202,7 +206,7 @@
 
         <form id="favform" action="/add-to-favorites/tv/<%= movie.id %>" method="POST">
 
-        <span class="favourite-mark"onclick="toggleFavorite(event)"  data-movie-id="<%= movie.id %>">
+        <span  id="book" class="favourite-mark"onclick="toggleFavorite(event)"  data-movie-id="<%= movie.id %>">
           <i  class="fa-regular fa-bookmark"></i>
          </span>
          </form>
@@ -237,7 +241,7 @@ function showToast(message) {
       setTimeout(() => {
         toastContainer.removeChild(toast);
       }, 500);
-    }, 1000);
+    }, 2000);
   }
 
       function toggleFavorite(event) {
@@ -245,15 +249,16 @@ function showToast(message) {
           const icon = event.currentTarget.querySelector('i');
           const tvId = event.currentTarget.dataset.movieId;
           const storageKey = 'favorite_' + tvId;
-          const isFavorite = localStorage.getItem(storageKey) === 'true';
+          const isFavorite = localStorage.getItem(storageKey) === 'false';
           const url = isFavorite ? `/remove-from-favorites/tv/${tvId}` : `/add-to-favorites/tv/${tvId}`;
           const method = isFavorite ? 'DELETE' : 'POST';
+          const bookmark = document.querySelector('#book')
           fetch(url, { method: method })
               .then(response => {
                 if (response.ok) {
                   localStorage.setItem(storageKey, !isFavorite);
                   icon.classList.toggle('fa-bookmark', !isFavorite);
-                  icon.classList.toggle('fa-bookmark', isFavorite);
+                   bookmark.style.display = 'none';
                   showToast(isFavorite ? 'Removed movie from favorites' : 'Added tv show to favorites');
                 } else {
                   console.error('Failed to update favorite status');
@@ -262,16 +267,6 @@ function showToast(message) {
               .catch(error => console.error('Error updating favorite status:', error));
           }
 
-          document.addEventListener('DOMContentLoaded', () => {
-            const movieId = document.querySelector('.favourite-mark').dataset.movieId;
-            const storageKey = 'favorite_' + movieId;
-            const isFavorite = localStorage.getItem(storageKey) === 'true';
-            const icon = document.querySelector('.favourite-mark i');
-            if (isFavorite) {
-              icon.classList.add('fa-bookmark');
-              icon.classList.remove('fa-bookmark');
-            }
-          });
   </script>
 
 

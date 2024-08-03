@@ -1,32 +1,57 @@
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
+const User = require('./user');
 
 
-  function initialize(passport, getUserByEmail, getUserById){
-    const authenticateUser = async (email, password, done)=>{
-        const user = getUserByEmail(email)
+function initialize(passport) {
+    // Define the function to get user by email
+    const getUserByEmail = async (email) => {
+        return User.findOne({ email }); // Find user by email
+    };
 
-        if(user == null){
-            return done(null, false, {message: 'no user found'})
-        }
+    // Define the function to get user by ID
+    const getUserById = async (id) => {
+        return User.findById(id); // Find user by ID
+    };
 
-        try{
-            if (await bcrypt.compare (password, user.password)){
-                return done(null, user)
-            }else{
-                return done(null, false, {message: 'password incorrect'})
+    // Authentication logic
+    const authenticateUser = async (email, password, done) => {
+        try {
+            const user = await getUserByEmail(email);
+
+            if (user == null) {
+                return done(null, false, { message: 'No user with that email' });
             }
-        }
-        catch(e){
-            return done(e)
-        }
-    }
 
+            if (await bcrypt.compare(password, user.password)) {
+                return done(null, user);
+            } else {
+                return done(null, false, { message: 'Password incorrect' });
+            }
+        } catch (e) {
+            return done(e);
+        }
+    };
 
- 
     passport.use(new LocalStrategy({ usernameField: 'email' }, authenticateUser));
-    passport.serializeUser((user, done) => done(null, user.id));
-    passport.deserializeUser((id, done) => done(null, getUserById(id)));
-  }
+    
+    passport.serializeUser((user, done) => {
+        done(null, user.id);
+    });
 
-module.exports = initialize
+    passport.deserializeUser(async (id, done) => {
+        try {
+            const user = await getUserById(id);
+            if (user) {
+                done(null, user);
+            } else {
+                done(new Error('User not found'));
+            }
+        } catch (err) {
+            done(err);
+        }
+    });
+}
+
+
+module.exports = initialize;

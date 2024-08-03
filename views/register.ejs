@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chillflix</title>
     <script defer src="/js_files/index.js"></script>
-    <script defer src="/backend/authentication/auth.js"></script>
     <link rel="stylesheet" href="stylesheet/register.css" />
     <link
       href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@100,400,300,200&f[]=boska@300&f[]=chillax@500,300,400&display=swap"
@@ -63,6 +62,8 @@
     
     <div class="info-input-container">
       <div id="error-message" style="color: red; display: none; font-size: 20px;">Please fill in both email and password fields!</div>
+      <div id="error-message-image" style="color: red; display: none; font-size: 20px;">Please upload image!</div>
+
 
       <form id="registerForm" action="/register" method="POST" enctype="multipart/form-data">
 
@@ -73,11 +74,16 @@
 
         <h1 class="create">Create an account </h1>
         <div class="file-upload">
-          <input type="file" name="image" id="file-input" accept="image/*" required onchange="previewImage(event)">
-          <div class="image-containers">
+          <div class="file-input-wrapper">
+
+         <button class="file-input-button">Choose image display</button>
+            <input type="file" name="image" id="file-input" accept="image/*" class="file-input" required onchange="previewImage(event)">
+          </div>
+            <div class="image-containers">
   
         
-          <img id="image-preview" >
+              <img id="image-preview" alt="select a profile">
+              <div id="image-error-message" style="color: red;"></div>
   
   </div>
         
@@ -94,7 +100,42 @@
 
         </div>
 
+        <script>
+          document.querySelector('.file-input-button').addEventListener('click', function() {
+              document.getElementById('file-input').click();
+          });
+      
+          function previewImage(event) {
+              const input = event.target;
+              const preview = document.getElementById('image-preview');
+              
+              const file = input.files[0];
 
+              if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'inline';
+                errorMessage.textContent = '';
+            };
+            reader.readAsDataURL(file);
+        }
+        else {
+            preview.style.display = 'none';
+            preview.src = '';
+            errorMessage.textContent = 'Please select a valid image file.';
+        }
+      
+              reader.onload = function(e) {
+                  preview.src = e.target.result;
+                  preview.style.display = 'inline';
+              };
+      
+              if (file) {
+                  reader.readAsDataURL(file);
+              }
+          }
+      </script>
 
 
 
@@ -103,7 +144,9 @@
           document.getElementById('registerForm').addEventListener('submit', function(event) {
             const email = document.getElementById('email');
             const password = document.getElementById('password');
-            const errorMessage = document.getElementById('error-message');
+            const fileInput = document.getElementById('image-preview');
+            const errorMessage = document.getElementById('error-message-image');
+      
     
             let valid = true;
     
@@ -120,6 +163,7 @@
             } else {
               password.style.border = '';
             }
+
     
             if (!valid) {
               event.preventDefault();
@@ -127,6 +171,11 @@
             } else {
               errorMessage.style.display = 'none';
             }
+
+
+       
+
+      
           });
         </script>
         <!--

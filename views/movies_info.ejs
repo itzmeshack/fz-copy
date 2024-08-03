@@ -72,10 +72,14 @@
   
     </div>
 
+  
     <div onclick="closemenu()" id="sidemenu" class="mobile-nav">
+
+
 
       <ul class="all-links">
         <li><a href="/profile"><img class="user-image-mobile" src="<%= user.image %>" alt=""></a></li>
+
 
         <li class="major-links">
           <a class="anchor-links" href="/home">HOME</a>
@@ -89,31 +93,27 @@
         <li class="major-links">
           <a class="anchor-links-sport" href="/topimdb">Sport +</a>
         </li>
-
-
         <div class="user-mobile-content">
           <ul class="user-mobile-con">
 
         
-          <li  class="user-list" ><a class="user-fav" href="/favourite"><span><i style="color: yellow;" class="fa-regular fa-star"></i></span> Favourite</a></li>
+            <li  class="user-list" >  <a class="user-fav" href="/favourite">
+              <span><i class="fa-regular fa-star" style="color: yellow; font-weight: 400; font-size: 18px;"></i></span>
+                <p style="color: yellow; position: relative; left: 25px;">Favourite</p>
+           
+          </a>
+        </li>
+
           <li  class="user-list-log"><a class="user-log" href="/login">Logout</a></li>
         </ul>
         </div>
- 
-  <span id="favclick"   class="fav" onclick="favmenuside()">
-    <i class="fa-solid fa-bars-staggered"></i>
-  </span>
-
-
-
- 
-
-     
-    
-        <img onclick="closemenu()" class="close-menu" src="/images_files/white-close.png" alt="close-menu-list">
-
+        <span class="fav" onclick="favmenuside()">
+          <i class="fa-solid fa-bars-staggered"></i>
+        </span>
       </ul>
-    </div>
+      <img onclick="closemenu()" class="close-menu" src="/images_files/white-close.png" alt="close-menu-list">
+
+    </div>  
 
 
     <img onclick="openmenu()" class="open-menu" src="/images_files/white-open.png" alt="">
@@ -215,9 +215,9 @@
        </span>
 
        <form id="favform" action="/add-to-favorites/movie/<%= movie.id %>" method="POST">
-       <span id="book" class="favourite-mark" onclick="toggleFavorite(event)"  data-movie-id="<%= movie.id %>">
-        <i   class="fa-regular fa-bookmark"></i>
-       </span>
+        <span id="book" class="favourite-mark" onclick="toggleFavorite(event)" data-movie-id="<%= movie.id %>">
+          <i class="fa-regular fa-bookmark"></i>
+        </span>
        </form>
 
      </div>
@@ -226,68 +226,65 @@
      </div>
 
 
+    
+
      <script>
 
-function showToast(message) {
-    const toastContainer = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.classList.add('toast');
-    toast.innerText = message;
+      function showToast(message) {
+          const toastContainer = document.getElementById('toast-container');
+          const toast = document.createElement('div');
+          toast.classList.add('toast');
+          toast.innerText = message;
+      
+          toastContainer.appendChild(toast);
+      
+          // Show the toast
+          setTimeout(() => {
+            toast.classList.add('show');
+          }, 100);
+      
+          // Hide the toast after 3 seconds
+          setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+              toastContainer.removeChild(toast);
+            }, 500);
+          }, 2000);
+        }
+      
+      
+      
+    function toggleFavorite(event) {
+    event.preventDefault();
+    const icon = event.currentTarget.querySelector('i');
+    const movieId = event.currentTarget.dataset.movieId;
+    const storageKey = 'favorite_' + movieId;
+    const isFavorite = localStorage.getItem(storageKey) === 'false';
+    const url =  `/add-to-favorites/movie/${movieId}`;
+    const method =  'POST';
+    const bookmark = document.querySelector('#book')
 
-    toastContainer.appendChild(toast);
-
-    // Show the toast
-    setTimeout(() => {
-      toast.classList.add('show');
-    }, 100);
-
-    // Hide the toast after 3 seconds
-    setTimeout(() => {
-      toast.classList.remove('show');
-      setTimeout(() => {
-        toastContainer.removeChild(toast);
-      }, 500);
-    }, 1000);
-  }
-
-
-
-           function toggleFavorite(event) {
-            event.preventDefault();
-            const icon = event.currentTarget.querySelector('i');
-            const movieId = event.currentTarget.dataset.movieId;
-            const storageKey = 'favorite_' + movieId;
-            const isFavorite = localStorage.getItem(storageKey) === 'true';
-            const url = isFavorite ? `/remove-from-favorites/movie/${movieId}` : `/add-to-favorites/movie/${movieId}`;
-            const method = isFavorite ? 'DELETE' : 'POST';
-
-            fetch(url, { method: method })
-              .then(response => {
-                if (response.ok) {
-                  localStorage.setItem(storageKey, !isFavorite);
-                  icon.classList.toggle('fa-bookmark', !isFavorite);
-                  icon.classList.toggle('fa-bookmark', isFavorite);
-                  showToast(isFavorite ? 'Removed movie from favorites' : 'Added movie to favorites');
-                } else {
-                  console.error('Failed to update favorite status');
-                }
-              })
-              .catch(error => console.error('Error updating favorite status:', error));
-          }
-
-          document.addEventListener('DOMContentLoaded', () => {
-            const movieId = document.querySelector('.favourite-mark').dataset.movieId;
-            const storageKey = 'favorite_' + movieId;
-            const isFavorite = localStorage.getItem(storageKey) === 'true';
-            const icon = document.querySelector('.favourite-mark i');
-            if (isFavorite) {
-              icon.classList.add('fa-bookmark');
-              icon.classList.remove('fa-bookmark');
+    fetch(url, { method: method })
+        .then(response => {
+            if (response.ok) {
+                localStorage.setItem(storageKey, !isFavorite);
+                icon.classList.toggle('fa-bookmark', !isFavorite);
+                bookmark.style.display = 'none'
+              
+                showToast(isFavorite ? 'Removed movie from favorites' : 'Added movie to favorites');
+            } else {
+                console.error('Failed to update favorite status');  
+              
             }
-          });
-    </script>
+        })
+        .catch(error => console.error('Error updating favorite status:', error));
+}
 
-     
+        
+
+
+          </script>
+      
     
   
   

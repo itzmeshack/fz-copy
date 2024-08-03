@@ -160,13 +160,78 @@
 
 
 
+  <!--div class="season-menu">
+    <% if (season) { %>
+      <h1 class="snumbers">Season <%= season.season_number %></h1>
+      <% season.episodes.forEach(episode => { %>
+        <div class="episode-item">
+          <h2>Episode <%= episode.episode_number %>: <%= episode.name %></h2>
+          <p><%= episode.overview %></p>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <p>Season information is not available.</p>
+    <% } %>
+  </div-->
+  
+
+  <div class="watch-container">
+    <% if (tvshow && seasons) { %>
+      <!--h1><%= tvshow.name %></h1-->
+  
 
 
-    <div class="watch-container">
-        <% if (tvshow) { %>
-          <iframe  src="https://vidsrc.to/embed/tv/<%= tvshow.id%>" frameborder="0" allowfullscreen></iframe>
-        <% } else { %>
-          <!-- Fallback message if no movie is available -->
-          <p>ERROR</p>
-        <% } %>
-      </div>
+      <div class="season-container">
+        
+  
+      <!-- Season selection dropdown -->
+      <form id="seasonForm" action="/watch/tv/<%= tvshow.id %>" method="GET">
+        <label for="seasonSelect"></label>
+        <select id="seasonSelect" name="season" onchange="document.getElementById('seasonForm').submit();">
+          <% seasons.forEach(seasonOption => { %>
+            <option value="<%= seasonOption.season_number %>" <%= season && seasonOption.season_number === season.season_number ? 'selected' : '' %>>
+              Season <%= seasonOption.season_number %>
+            </option>
+          <% }); %>
+        </select>
+      </form>
+  
+      <!-- Episode selection dropdown -->
+      <% if (season) { %>
+        <form id="episodeForm" action="/watch/tv/<%= tvshow.id %>" method="GET">
+          <input type="hidden" name="season" value="<%= season.season_number %>">
+          <label for="episodeSelect"></label>
+          <select id="episodeSelect" name="episode" onchange="document.getElementById('episodeForm').submit();">
+            <% season.episodes.forEach(episodeOption => { %>
+              <option value="<%= episodeOption.episode_number %>" <%= episode && episodeOption.episode_number === episode.episode_number ? 'selected' : '' %>>
+                Episode <%= episodeOption.episode_number %>: <%= episodeOption.name %>
+              </option>
+            <% }); %>
+          </select>
+        </form>
+
+
+      <% } else { %>
+        <p>No episodes available for this season.</p>
+      <% } %>
+
+    </div>
+  
+      <!-- Display selected episode -->
+      <% if (episode) { %>
+        <div class="episode-item">
+          <!--h3>Episode <%= episode.episode_number %>: <%= episode.name %></h3-->
+          <p><%= episode.overview %></p>
+          <iframe  src="https://vidsrc.pro/embed/tv/<%= tvshow.id %>/<%= season.season_number %>/<%= episode.episode_number %>" frameborder="0" allowfullscreen></iframe>
+        </div>
+      <% } else { %>
+        <p>Please select an episode to watch.</p>
+      <% } %>
+  
+    <% } else { %>
+      <p>TV show information is not available.</p>
+    <% } %>
+  </div>
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -160,90 +160,76 @@
 
     <h2 style="color: white; text-align: center; padding: 1em; position: relative; top: 3em;   font-family:'Chillax', sans-serif; font-weight: 100; "> Your Favourite list </h2>
     <div>
-      <div class="unorder-movies">
-        <% user.favoriteMovies.forEach(function(movie) { %>
-        <div id="movie-<%= movie.id %>" class="all-movies-con">
-
-   
-          <a href="/watch/movie/<%= movie.id %>" style="text-decoration: none; color: white;    font-family: Clash Display, sans-serif; font-size: 20px; ">
 
 
-
-            <img class="all-fav-img" src="https://image.tmdb.org/t/p/original/<%= movie.poster_path %>" alt="<%= movie.title %> poster" onmouseover="this.style.filter = 'brightness(60%)';" onmouseout="this.style.filter = 'brightness(100%)'; ">
-
-
-          </a>
-
-
-          <p class="all-text"> <%= movie.title %></p>
-          <span class="all-bins-rev"><i class="fa-regular fa-trash-can" style="color: red" onclick="removeFromFavorites('<%= movie.id %>')"></i></span>
-       
-        </div>
-
-
-
-
-
-
-
-          
-
-
-
-
-
-
-
-
-
-       
-
-
-
-
-
-
-
+       <!-- Movies Section -->
+    <div class="unorder-movies">
+      <% if (favorites && favorites.length > 0) { %>
+        <% favorites.forEach(function(item) { %>
+          <% if (item.type === 'movie') { %>
+            <div id="movie-<%= item.movieId %>" class="all-movies-con">
+              <a href="/watch/movie/<%= item.movieId %>" style="text-decoration: none; color: white; font-family: 'Clash Display', sans-serif; font-size: 20px;">
+                <img class="all-fav-img" src="https://image.tmdb.org/t/p/original/<%= item.poster_path %>" alt="<%= item.title %> poster" onmouseover="this.style.filter = 'brightness(60%)';" onmouseout="this.style.filter = 'brightness(100%)';">
+              </a>
+              <p class="all-text"><%= item.title %></p>
+              <span class="all-bins-rev">
+                <i class="fa-regular fa-trash-can" style="color: red; cursor: pointer;" onclick="removeFromFavorites('movie', '<%= item.movieId %>')"></i>
+              </span>
+            </div>
+          <% } %>
         <% }); %>
-      </div>
+      <% } else { %>
+        <p>No favorite movies found.</p>
+      <% } %>
+    </div>
+      
 
 
       <script>
-        function removeFromFavorites(movieId) {
-          fetch(`/remove-from-favorites/movie/${movieId}`, {
-            method: 'DELETE'
-          }).then(response => {
-            if (response.ok) {
-              const movieElement = document.getElementById(`movie-${movieId}`);
-              if (movieElement) {
-                movieElement.remove();
-              }
-              const storageKey = 'favorite_' + movieId;
-              localStorage.setItem(storageKey, 'false');
-
-            } else {
-              console.error('Failed to remove movie from favorites');
-            }
-          }).catch(error => {
-            console.error('Error removing movie from favorites:', error);
-          });
+      function removeFromFavorites(type, id) {
+  fetch(`/remove-from-favorites/${type}/${id}`, {
+    method: 'DELETE'
+  }).then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        const elementId = `${type}-${id}`;
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.remove();
         }
+      } else {
+        console.error(data.message);
+      }
+    }).catch(error => {
+      console.error('Error removing from favorites:', error);
+    });
+}
+
+
+         
       </script>
 
-<div  class="unorder-tvshows">
-        <% user.favoriteTvShows.forEach(function(tv) { %>
-        <div id="tv-<%= tv.id %>" class="all-movies-con">
-            <a href="/watch/tv/<%= tv.id %>" style="text-decoration: none; color: white; font-family: Clash Display, sans-serif; font-size: 20px;">
-              <img  class="all-fav-img"  src="https://image.tmdb.org/t/p/original/<%= tv.poster_path %>" alt="<%= tv.title %> poster" onmouseover="this.style.filter = 'brightness(60%)';" onmouseout="this.style.filter = 'brightness(100%)'; ">
-           
-            </a>
-            <p class="all-text" ><%= tv.name %></p>
-            <span class="all-bins-rev"><i class="fa-regular fa-trash-can" style="color: red;" onclick="removeFromFavoritestv('<%= tv.id %>')"></i></span>
-        
-        </div>
+   
+      <!-- TV Shows Section -->   
+
+ <div class="unorder-tvshows">
+      <% if (favorites && favorites.length > 0) { %>
+        <% favorites.forEach(function(item) { %>
+          <% if (item.type === 'tv') { %>
+            <div id="tv-<%= item.tvId %>" class="all-movies-con">
+              <a href="/watch/tv/<%= item.tvId %>" style="text-decoration: none; color: white; font-family: 'Clash Display', sans-serif; font-size: 20px;">
+                <img class="all-fav-img" src="https://image.tmdb.org/t/p/original/<%= item.poster_path %>" alt="<%= item.title %> poster" onmouseover="this.style.filter = 'brightness(60%)';" onmouseout="this.style.filter = 'brightness(100%)';">
+              </a>
+              <p class="all-text"><%= item.title %></p>
+              <span class="all-bins-rev">
+                <i class="fa-regular fa-trash-can" style="color: red; cursor: pointer;" onclick="removeFromFavorites('tv', '<%= item.tvId %>')"></i>              </span>
+            </div>
+          <% } %>
         <% }); %>
-</div>
-    
+      <% } else { %>
+        <p>No favorite TV shows found.</p>
+      <% } %>
+    </div>
     
     
     
@@ -255,21 +241,23 @@
 
 
     <script>
-      function removeFromFavoritestv(tvId) {
-        fetch(`/remove-from-favorites/tv/${tvId}`, {
+      function removeFromFavoritestv(type ,id) {
+        fetch(`/remove-from-favorites/${type}/${id}`, {
           method: 'DELETE'
-        }).then(response => {
-          if (response.ok) {
-            const tvElement = document.getElementById(`tv-${tvId}`);
-            if (tvElement) {
-              tvElement.remove();
-            }
-            const storageKey = 'favorite_' + tvId;
-            localStorage.setItem(storageKey, 'false');
+        }).then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        const elementId = `${type}-${id}`;
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.remove();
 
-          } else {
-            console.error('Failed to remove movie from favorites');
-          }
+        }
+        window.location.reload();
+
+      } else {
+        console.error(data.message);
+      }
         }).catch(error => {
           console.error('Error removing movie from favorites:', error);
         });

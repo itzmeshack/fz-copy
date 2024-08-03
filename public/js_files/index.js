@@ -627,7 +627,7 @@ document.getElementById('file-input').addEventListener('change', function() {
 
 
 
-
+/*
 function previewImage(event) {
   const reader = new FileReader();
   reader.onload = function() {
@@ -637,8 +637,10 @@ function previewImage(event) {
   reader.readAsDataURL(event.target.files[0]);
 }
 
-
+*/
 function previewImage(event) {
+
+  
   const input = event.target;
   const preview = document.getElementById('image-preview');
   const file = input.files[0];

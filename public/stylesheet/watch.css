@@ -478,14 +478,26 @@ display: none;
   .watch-container iframe {
         object-fit: contain !important;
         overflow-x: hidden !important;
-        width: 1500px;
-        height: 730px;
+        width: 1450px;
+        height: 720px;
         position: fixed;
         left: 0;
+        z-index: 1;
         
        
        
         /* Add any other custom styles here */
+    }
+
+
+    .episode-item iframe{
+      object-fit: contain !important;
+      overflow-x: hidden !important;
+      width: 1450px;
+      height: 600px;
+      position: fixed;
+      left: 0;
+      z-index: 1;
     }
 
     .watch-container{
@@ -495,10 +507,30 @@ display: none;
        
     }  
    
-    
+    /* for tv shows seasons numbers */
+
+
+    .snumbers{
+      color: white;
+    }
+    .season-container{
+      position: relative;
+      top: 5em;
+      right: -27em;
+      z-index: 2;
   
+    }
+
+    .season-menu{
+      color: white;
+      position: relative;
+      top: 3em;
+    }
   
-    
+   .episode-list{
+    width: 400px;
+    background-color: white;
+   } 
   
   
     

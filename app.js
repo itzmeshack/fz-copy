@@ -37,6 +37,8 @@ const session = require("express-session");
 const fetch = require("node-fetch");
 const multer = require("multer");
 const helmet = require("helmet");
+const mongoose = require("mongoose");
+const MongoStore = require("connect-mongo");
 
 /* we coming back to cache so we can see how we can efficiently use it through out the server/*/
 
@@ -47,13 +49,35 @@ const helmet = require("helmet");
 const apicache = require('apicache');
 
 
-const cacheDuration = '5 minutes';
+const cacheDuration = '1 minutes';
 
 const  cache = apicache.middleware;
 
+/** for redis application */
+/*
+const redisClient = redis.createClient({
+  host: 'localhost', // or your Redis server address
+  port: 6379,        // default Redis port
+});
 
+redisClient.on('error', (err) => {
+  console.error('Redis error: ', err);
+});
 
+redisClient.on('connect', () => {
+  console.log('Connected to Redis');
+});
 
+// Set up session with Redis store
+app.use(
+  session({
+    store: new RedisStore({ client: redisClient }),
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+*/
 
 
 
@@ -101,7 +125,12 @@ app.use((err, req, res, next) => {
 
 
 
+
 const initializePassport = require("./api/passport-config");
+
+const User = require('./api/user');
+const Favourite = require('./api/favourite');
+
 
 //for geting movies details
 //const  fetchmovies = require('./movieServer');
@@ -113,7 +142,7 @@ initializePassport(
   (id) => user.find((user) => user.id === id)
 );
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 
 
@@ -159,11 +188,36 @@ app.use('/images_files', express.static(path.join(__dirname, 'public', 'images_f
 app.use(express.urlencoded({ extended: false }));
 
 app.use(flash());
+
+// Connect to MongoDB
+
+
+mongoose.connect('mongodb://localhost:27017/yourDatabase', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log('Connected to MongoDB');
+}).catch((err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      collectionName: 'sessions',
+      ttl: 14 * 24 * 60 * 60 // 14 days
+    }),
+    cookie: {
+      maxAge: 14 * 24 * 60 * 60 * 1000 // 14 days in milliseconds
+    }
+      
   })
 );
 
@@ -226,23 +280,49 @@ app.get('/watch/movie/:movieId', checkAuthenticated, async (req, res) => {
 app.get('/watch/tv/:tvId', checkAuthenticated, async (req, res) => {
   try {
     const tvId = req.params.tvId;
+    const seasonNumber = req.query.season || 1; // Default to season 1 if not provided
+    const episodeNumber = req.query.episode || null; // Default to null if not provided
+
     const tvUrl = `${Base_URL}/tv/${tvId}?api_key=${API_KEY}&language=en-US`;
+    const seasonUrl = `${Base_URL}/tv/${tvId}/season/${seasonNumber}?api_key=${API_KEY}&language=en-US`;
 
-    const response = await fetch(tvUrl);
-    const tvData = await response.json();
+    const tvResponse = await fetch(tvUrl);
+    const seasonResponse = await fetch(seasonUrl);
 
-    res.render('watch-tv.ejs', {tvshow: tvData, user: req.user })
+    const tvData = await tvResponse.json();
+    const seasonData = await seasonResponse.json();
+
+    // Default to the first episode of the season if no episode is specified
+    let episodeData = null;
+    if (!episodeNumber && seasonData.episodes.length > 0) {
+      episodeData = seasonData.episodes[0];
+    } else if (episodeNumber) {
+      const episodeUrl = `${Base_URL}/tv/${tvId}/season/${seasonNumber}/episode/${episodeNumber}?api_key=${API_KEY}&language=en-US`;
+      const episodeResponse = await fetch(episodeUrl);
+      episodeData = await episodeResponse.json();
+    }
+
+    res.render('watch-tv.ejs', {
+      tvshow: tvData,
+      seasons: tvData.seasons,  // Extract the seasons from the tvData
+      season: seasonData,
+      episode: episodeData,     // Pass the episode data
+      user: req.user,
+    });
   } catch (error) {
-    console.error('Error fetching movie data:', error);
+    console.error('Error fetching TV show data:', error);
     res.status(500).send('Internal Server Error');
   }
- 
-})
+});
+
+
+
+
 
 
 let movies = [];
 
-app.get("/home",   cache(cacheDuration), async (req, res) => {
+app.get("/home",   checkAuthenticated, cache(cacheDuration), async (req, res) => {
   try {
     const [
       response,
@@ -313,7 +393,7 @@ app.get("/home",   cache(cacheDuration), async (req, res) => {
     const animeMoviesWithQuality = applyQuality(animeData.results);
 
     if (data.results.length > 0) {
-      movies = moviesWithQuality[4];
+      movies = moviesWithQuality[0];
       const releaseYear = data.results[1].release_date.split("-");
       res.render("home.ejs", {
         releaseYear,
@@ -325,11 +405,9 @@ app.get("/home",   cache(cacheDuration), async (req, res) => {
         horrorMovies: horrorMoviesWithQuality,
         ratedMovies: ratedMoviesWithQuality,
         animeMovies: animeMoviesWithQuality,
-       user: req.user 
+        user: req.user 
       });
-    } else {
-      res.render("home.ejs", { movies: [], user: req.user });
-    }
+    } 
   } catch (error) {
     console.error("Error fetching data:", error);
   }
@@ -389,6 +467,9 @@ app.get("/movie/:movieId", checkAuthenticated,  async (req, res) => {
     // Fetching production countries and spoken languages
     const countries = data.production_countries;
     const languages = data.spoken_languages;
+    const userId = req.user.id;
+    const isFavorite = await Favourite.exists({ userId, movieId });
+
 
     res.render("movies_info.ejs", {
       movie: data,
@@ -397,7 +478,8 @@ app.get("/movie/:movieId", checkAuthenticated,  async (req, res) => {
       duration: data.runtime,
       countries: countries,
       languages: languages,
-      user: req.user
+      user: req.user,
+      isFavorite
     });
   } catch (error) {
     console.error("Error fetching movie details:", error);
@@ -759,7 +841,7 @@ app.get('/change-profile', checkAuthenticated, (req, res) =>{
   res.render("change-profile.ejs", { user: req.user });
 })
 
-app.get('/profile', checkAuthenticated, (req, res) => {
+app.get('/profile', checkAuthenticated,  cache(cacheDuration),  (req, res) => {
   res.render('profile.ejs', { user: req.user });
 })
 
@@ -771,12 +853,16 @@ app.post("/register", checkNotAuthenticated, upload.single('image'), async (req,
     const hashedPassword = await bcrypt.hash(req.body.password, 12);
     const imagePath = req.file ? `/uploads/${req.file.filename}` : '/default.jpg'; // Set a default image if none is uploaded
 
-    user.push({
-      id: Date.now().toString(), // Add the missing parentheses to call the function
-      email: req.body.email,
-      password: hashedPassword,
-      image: imagePath
-    });
+       // Create a new user instance
+       const newUser = new User({
+        email: req.body.email,
+        password: hashedPassword,
+        image: imagePath
+      });
+
+
+// Save the user to MongoDB
+await newUser.save();
 
     res.redirect("/login");
   } catch (error) {
@@ -812,14 +898,18 @@ app.post('/logout', (req, res) => {
 
 
 
-app.post('/change-profile', 
-upload.single('image'), checkAuthenticated, (req, res) => {
-  const currentUser = user.find(u => u.id === req.user.id);
-  if (currentUser && req.file) {
-    currentUser.image = `/uploads/${req.file.filename}`;//if there is a successful upload it redirect you to the /profile page
-    res.redirect("/profile");
-  } else {
-    res.redirect("/change-profile");
+app.post('/change-profile', upload.single('image'), checkAuthenticated, async (req, res) => {
+  try {
+    const imagePath = req.file ? `/uploads/${req.file.filename}` : req.user.image;
+
+    await User.findByIdAndUpdate(req.user.id, {
+      image: imagePath
+    });
+
+    res.redirect('/profile');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating profile");
   }
 });
 
@@ -832,118 +922,173 @@ app.get('/favourite', checkAuthenticated, (req, res) => {
 })
 
 */
+app.get('/favourite', checkAuthenticated, async (req, res) => {
+  try {
+    const userId = req.user.id; // Assuming user ID is stored in req.user.id
+    const favorites = await Favourite.find({ userId });// Populate if needed
 
-app.get('/favourite', checkAuthenticated, (req, res) => {
-  const currentUser = user.find(u => u.id === req.user.id);
-  if (currentUser) {
-    // Ensure favoriteMovies and favoriteTvShows are always defined
-    currentUser.favoriteMovies = currentUser.favoriteMovies || [];
-    currentUser.favoriteTvShows = currentUser.favoriteTvShows || [];
+    res.render('favourite.ejs', { 
+      favorites: favorites, // Directly use the favorites
+      user: req.user 
     
-    res.render('favourite.ejs', { user: currentUser });
-  } else {
-    res.status(404).send('User not found');
+    });
+  } catch (error) {
+    console.error('Error fetching favorite movies:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
+
+
+
+
+app.get('/is-favorite/movie/:movieId', checkAuthenticated, async (req, res) => {
+  const movieId = req.params.movieId;
+  const userId = req.user.id;
+
+  try {
+    const favorite = await Favourite.findOne({ userId, movieId });
+    res.json({ isFavorite: !!favorite });
+  } catch (error) {
+    console.error('Error checking favorite status:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 app.post('/add-to-favorites/movie/:movieId', checkAuthenticated, async (req, res) => {
   const movieId = req.params.movieId;
-  const currentUser = user.find(u => u.id === req.user.id);
+  const userId = req.user.id;
 
-  if (currentUser) {
-    // Initialize favoriteMovies array if it doesn't exist
-    currentUser.favoriteMovies = currentUser.favoriteMovies || [];
-
-    const movieUrl = `${Base_URL}/movie/${movieId}?api_key=${API_KEY}&language=en-US`;
-    try {
-      const response = await fetch(movieUrl);
-      if (!response.ok) throw new Error('Failed to fetch movie data');
-      
-      const movieData = await response.json();
-
-      if (!currentUser.favoriteMovies.some(movie => movie.id === movieData.id)) {
-        currentUser.favoriteMovies.push({
-          id: movieData.id,
-          title: movieData.title,
-          poster_path: movieData.poster_path
-        });
-      }
-      res.redirect('/favourite');
-    } catch (error) {
-      res.status(500).send('Error fetching movie data');
+  try {
+    // Check if the movie is already in the user's favorites
+    const existingFavorite = await Favourite.findOne({ userId, movieId });
+    if (existingFavorite) {
+      return res.status(400).send('Movie is already in favorites');
     }
-  } else {
-    res.status(404).send('User not found');
+
+    // Fetch movie details
+    const movieUrl = `${Base_URL}/movie/${movieId}?api_key=${API_KEY}&language=en-US`;
+    const response = await fetch(movieUrl);
+    if (!response.ok) throw new Error('Failed to fetch movie data');
+
+    const movieData = await response.json();
+
+    // Validate movieData
+    if (!movieData.title || !movieData.poster_path) {
+      return res.status(500).send('Movie data incomplete');
+    }
+
+    // Add the movie to favorites
+    const newFavorite = new Favourite({
+      userId,
+      movieId,
+      type: 'movie', 
+      title: movieData.title,
+      poster_path: movieData.poster_path
+    });
+    await newFavorite.save();
+
+    res.status(200).send('Movie added to favorites');
+  } catch (error) {
+    console.error('Error adding movie to favorites:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
 
 
 
-
-
-
-
-app.delete('/remove-from-favorites/movie/:movieId', checkAuthenticated, (req, res) => {
+app.delete('/remove-from-favorites/movie/:movieId', checkAuthenticated, async (req, res) => {
   const movieId = req.params.movieId;
-  const currentUser = user.find(u => u.id === req.user.id);
+  const userId = req.user.id;
 
-  if (currentUser) {
-    currentUser.favoriteMovies = currentUser.favoriteMovies.filter(movie => movie.id != movieId);
-    res.sendStatus(200);
-  } else {
-    res.status(404).send('User not found');
- 
- 
+  try {
+    const result = await Favourite.deleteOne({ userId, movieId });
+    if (result.deletedCount > 0) {
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ success: false, message: 'Favorite not found' });
+    }
+  } catch (error) {
+    console.error('Error removing favorite:', error);
+    res.status(500).send('Internal Server Error');
   }
-
 });
 
 
+/*
+app.delete('/remove-from-favorites/:type/:id', checkAuthenticated, async (req, res) => {
+  const { type, id } = req.params;
+  const userId = req.user.id;
+  const query = { userId };
+
+  if (type === 'movie') {
+    query.movieId = id;
+  } else if (type === 'tv') {
+    query.tvId = id;
+  } else {
+    return res.status(400).send('Invalid type');
+  }
+
+  try {
+    const result = await Favourite.deleteOne(query);
+    if (result.deletedCount > 0) {
+      res.status(200).json({ success: true, message: 'Item removed from favorites' });
+    } else {
+      res.status(404).json({ success: false, message: 'Item not found in favorites' });
+    }
+  } catch (error) {
+    console.error('Error removing item from favorites:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+*/
 
 
 
 
 
 
-/** adding to tv servers */
+
+
 app.post('/add-to-favorites/tv/:tvId', checkAuthenticated, async (req, res) => {
   const tvId = req.params.tvId;
-  const currentUser = user.find(u => u.id === req.user.id);
+  const userId = req.user.id;
+  
+  try {
+    // Check if the TV show is already in the user's favorites
+    const existingFavorite = await Favourite.findOne({ userId, tvId });
+    if (existingFavorite) {
+      return res.status(400).send('TV show is already in favorites');
+    }
 
-  if (currentUser) {
-    // Initialize favoriteTvShows array if it doesn't exist
-    currentUser.favoriteTvShows = currentUser.favoriteTvShows || [];
-
+    // Fetch TV show details
     const tvUrl = `${Base_URL}/tv/${tvId}?api_key=${API_KEY}&language=en-US`;
     const response = await fetch(tvUrl);
+    if (!response.ok) throw new Error('Failed to fetch TV show data');
+
     const tvData = await response.json();
 
-    if (!currentUser.favoriteTvShows.some(tv => tv.id === tvId)) {
-      currentUser.favoriteTvShows.push({
-        id: tvData.id,
-        name: tvData.name,
-        poster_path: tvData.poster_path
-      });
-    }
-    res.redirect('/favourite');
-  } else {
-    res.status(404).send('User not found');
+    // Add the TV show to favorites
+    const newFavorite = new Favourite({
+      userId,
+      tvId,
+      type: 'tv', 
+      title: tvData.name,
+      poster_path: tvData.poster_path
+    });
+    await newFavorite.save();
+
+    res.status(200).send('TV show added to favorites');
+  } catch (error) {
+    console.error('Error adding TV show to favorites:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
 
 
 
-app.delete('/remove-from-favorites/tv/:tvId', checkAuthenticated, (req, res) => {
-  const tvId = req.params.tvId;
-  const currentUser = user.find(u => u.id === req.user.id);
 
-  if (currentUser) {
-    currentUser.favoriteTvShows = currentUser.favoriteTvShows.filter(tv => tv.id != tvId);
-    res.sendStatus(200);
-  } else {
-    res.status(404).send('User not found');
-  }
-});
+
 
 
 
@@ -963,5 +1108,3 @@ function checkNotAuthenticated(req, res, next) {
   }
  next();
 }
-
-module.exports = app;

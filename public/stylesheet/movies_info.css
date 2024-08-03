@@ -187,12 +187,12 @@
 
   /* styling for favourite bookmark*/
 
-  .favourite-mark:hover{
+  .fa-bookmark:hover{
     color: yellow;
     cursor: pointer;
   }
 
-  .favourite-mark.active::after{
+  .fa-bookmark.active::after{
     content: '';
     display: block;
     color: yellow;
@@ -569,17 +569,16 @@
 
     .user-mobile-con a{
       text-decoration: none;
-     
       font-family: 'Chillax', sans-serif;
       font-weight: 400;
    
 
     }
 
-   li .user-fav{
+   
+
+    .iconic{
       color: yellow;
-    
-  
     }
 
 
