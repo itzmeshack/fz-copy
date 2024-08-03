@@ -192,7 +192,7 @@ app.use(flash());
 // Connect to MongoDB
 
 
-mongoose.connect('mongodb://localhost:27017/yourDatabase', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/yourDatabase', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {
@@ -205,21 +205,20 @@ mongoose.connect('mongodb://localhost:27017/yourDatabase', {
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    
     store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
+      mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/yourDatabase',
       collectionName: 'sessions',
       ttl: 14 * 24 * 60 * 60 // 14 days
     }),
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
     cookie: {
       maxAge: 14 * 24 * 60 * 60 * 1000 // 14 days in milliseconds
     }
-      
   })
 );
+
 
 app.use(passport.initialize());
 app.use(passport.session());
