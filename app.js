@@ -192,7 +192,7 @@ app.use(flash());
 // Connect to MongoDB
 
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/yourDatabase', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://elsawilom:KkH8t4jc9zKWyQGR@cluster0.byvppgq.mongodb.net/', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {
@@ -206,7 +206,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/yourDatab
 app.use(
   session({
     store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/yourDatabase',
+      mongoUrl: process.env.MONGODB_URI || 'mongodb+srv://elsawilom:KkH8t4jc9zKWyQGR@cluster0.byvppgq.mongodb.net/',
       collectionName: 'sessions',
       ttl: 14 * 24 * 60 * 60 // 14 days
     }),
