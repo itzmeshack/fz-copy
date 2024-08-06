@@ -188,8 +188,7 @@ function treadingmoveSlide(direction) {
       slider.style.transform = `translateX(${newX}px)`;
     }
 
-    console.log(slider.style.transform);
-    console.log(`this is the new slide ${newX}`);
+ 
 
 
 };
@@ -223,8 +222,7 @@ function releasemoveSlide(move) {
       slider.style.transform = `translateX(${newX}px)`;
     }
 
-    console.log(slider.style.transform);
-    console.log(`this is the new slide ${newX}`);
+   
 
 
 };
@@ -257,8 +255,7 @@ function actionmoveSlide(direction){
       slider.style.transform = `translateX(${newX}px)`;
     }
 
-    console.log(slider.style.transform);
-    console.log(`this is the new slide ${newX}`);
+  
 };
 
 
@@ -290,8 +287,6 @@ function moviesmoveSlide(direction){
       slider.style.transform = `translateX(${newX}px)`;
     }
 
-    console.log(slider.style.transform);
-    console.log(`this is the new slide ${newX}`);
 
 }
 
@@ -325,8 +320,6 @@ function latetestmoveSlide(direction){
       slider.style.transform = `translateX(${newX}px)`;
     }
 
-    console.log(slider.style.transform);
-    console.log(`this is the new slide ${newX}`);
 };
 
 
@@ -358,8 +351,7 @@ function  showmoveSlide(direction){
       slider.style.transform = `translateX(${newX}px)`;
     }
 
-    console.log(slider.style.transform);
-    console.log(`this is the new slide ${newX}`);
+  
 
 };
 
@@ -391,8 +383,7 @@ function animemoveSlide(direction){
       slider.style.transform = `translateX(${newX}px)`;
     }
 
-    console.log(slider.style.transform);
-    console.log(`this is the new slide ${newX}`);
+
 
 }
 

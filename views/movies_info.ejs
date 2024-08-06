@@ -374,6 +374,26 @@
 
   </div>
 
+
+
+  <div class="recommendations-section">
+    <h1 class="rec-title">Recommended For You</h1>
+    <div class="recommendations-container">
+      <% if (recommendations && recommendations.length > 0) { %>
+        <% recommendations.forEach(recommendation => { %>
+          <div class="recommendation-item">
+            <a href="/movie/<%= recommendation.id %>">
+              <img class="rec-movies" src="https://image.tmdb.org/t/p/w500/<%= recommendation.poster_path %>" alt="<%= recommendation.title %>">
+
+            </a>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <p>No recommendations available.</p>
+      <% } %>
+    </div>
+  </div>
+
   </div>
 
 

@@ -354,6 +354,26 @@ function showToast(message) {
 
     </div>
 
+
+
+    <div class="recommendations-section">
+      <h2 class="rec-title">Recommended For You</h2>
+      <div class="recommendations-container">
+        <% if (recommendations && recommendations.length > 0) { %>
+          <% recommendations.forEach(recommendation => { %>
+            <div class="recommendation-item">
+              <a href="/tv/<%= recommendation.id %>">
+                <img class="rec-movies" src="https://image.tmdb.org/t/p/w500<%= recommendation.poster_path %>" alt="<%= recommendation.name %>">
+       
+              </a>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <p>No recommendations available</p>
+        <% } %>
+      </div>
+      </div>
+
 </div>
 
     </div>
@@ -362,81 +382,7 @@ function showToast(message) {
 
 
 
-    <div class="season-area">
-      <div class="season-container">
-        <select name="season" id="#" class="all-seasons">
-          <option class="opt-season" value="Season 1">Season 1</option>
-          <option class="opt-season" value="Season 2"> Season 2</option>
-          <option class="opt-season" value="Season 3"> Season 3</option>
-          <option class="opt-season" value="Season 4"> Season 4</option>
-          <option class="opt-season" value="Season 5"> Season 5</option>
-          <option class="opt-season" value="Season 6"> Season 6</option>
-
-        </select>
-
-      </div>
-
-      <div class="episode-area">
-        <a class="epi-links" href="#">
-          <div class="episode-container">
-            <span>Episode 1:</span>
-            <span> The piliot</span>
-          </div>
-        </a>
-
-        <a class="epi-links" href="#">
-          <div class="episode-container">
-            <span>Episode 2:</span>
-            <span> The piliot</span>
-          </div>
-        </a>
-
-        <a class="epi-links" href="#">
-          <div class="episode-container">
-            <span>Episode 3:</span>
-            <span> The piliot</span>
-          </div>
-        </a>
-
-        <a class="epi-links" href="#">
-          <div class="episode-container">
-            <span>Episode 4:</span>
-            <span> The piliot</span>
-          </div>
-        </a>
-
-        <a class="epi-links" href="#">
-          <div class="episode-container">
-            <span>Episode 4:</span>
-            <span> The piliot</span>
-          </div>
-        </a>
-
-        <a class="epi-links" href="#">
-          <div class="episode-container">
-            <span>Episode 4:</span>
-            <span> The piliot</span>
-          </div>
-        </a>
-        <a class="epi-links" href="#">
-          <div class="episode-container">
-            <span>Episode 4:</span>
-            <span> The piliot</span>
-          </div>
-        </a> <a class="epi-links" href="#">
-          <div class="episode-container">
-            <span>Episode 4:</span>
-            <span> The piliot</span>
-          </div>
-        </a>
-
-
-      </div>
-
-    </div>
-
-
-
+   
 
 
 

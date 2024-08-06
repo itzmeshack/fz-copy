@@ -470,6 +470,14 @@ app.get("/movie/:movieId", checkAuthenticated,  async (req, res) => {
     const isFavorite = await Favourite.exists({ userId, movieId });
 
 
+
+    // Fetching recommendations
+    const recommendationsUrl = `${Base_URL}/movie/${movieId}/recommendations?api_key=${API_KEY}&language=en-US`;
+    const recommendationsResponse = await fetch(recommendationsUrl);
+    const recommendationsData = await recommendationsResponse.json();
+    const recommendations = recommendationsData.results;
+
+
     res.render("movies_info.ejs", {
       movie: data,
       movieCast: cast,
@@ -478,6 +486,7 @@ app.get("/movie/:movieId", checkAuthenticated,  async (req, res) => {
       countries: countries,
       languages: languages,
       user: req.user,
+      recommendations,
       isFavorite
     });
   } catch (error) {
@@ -543,6 +552,13 @@ app.get("/tv/:tvId", checkAuthenticated,  async (req, res) => {
       const countries = data.production_countries;
       const languages = data.spoken_languages;
 
+
+
+  // Fetching recommendations
+  const recommendationsUrl = `${Base_URL}/tv/${tvId}/recommendations?api_key=${API_KEY}&language=en-US`;
+  const recommendationsResponse = await fetch(recommendationsUrl);
+  const recommendationsData = await recommendationsResponse.json();
+
   //const animeResponse = await fetch(animeurl);
   //const animeData = animeResponse.json()
 
@@ -563,6 +579,7 @@ app.get("/tv/:tvId", checkAuthenticated,  async (req, res) => {
     totalDuration: totalDuration,
     countries: countries,
     languages: languages, 
+    recommendations: recommendationsData.results,
     user: req.user
     //anime: animeData
 
