@@ -894,4 +894,52 @@ top: -1em;
   opacity: 1;
 }
 
+
+
+
+
+/* movies recommendation styling*/
+
+.rec-movies{
+  width: 100%;
+  border-radius: 5px;
+
+
+}
+
+.rec-movies:hover{
+
+  transition: all .2s ease-in;
+  filter: brightness(50%);
+  
+}
+.recommendations-container{
+  display: grid;
+  grid-template-columns: repeat(4, 4fr);
+  gap: 6px ;
+
+  
+
+  
+}
+.recommendations-section{
+
+position: relative;
+margin-bottom: -10em;
+  padding: 10px 10px 0px 10px;
+  
+
+
+}
+
+.rec-title{
+  color: white;
+  font-family: "Clash Display", sans-serif;
+  font-size: 17px;
+position: relative;
+padding: 0px 0px 10px 0px;
+
+
+}
+
 }
