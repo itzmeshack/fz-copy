@@ -185,23 +185,28 @@
         
   
       <!-- Season selection dropdown -->
-      <form id="seasonForm" action="/watch/tv/<%= tvshow.id %>" method="GET">
-        <label for="seasonSelect"></label>
-        <select id="seasonSelect" name="season" onchange="document.getElementById('seasonForm').submit();">
+
+      <form class="season-form" id="seasonForm" action="/watch/tv/<%= tvshow.id %>" method="GET">
+        <div class="all-wrap">
+
+   
+        <label class="season-container-label" for="seasonSelect"></label>
+        <select class="season-select"  id="seasonSelect" name="season" onchange="document.getElementById('seasonForm').submit();">
           <% seasons.forEach(seasonOption => { %>
             <option value="<%= seasonOption.season_number %>" <%= season && seasonOption.season_number === season.season_number ? 'selected' : '' %>>
               Season <%= seasonOption.season_number %>
             </option>
           <% }); %>
         </select>
+      </div>
       </form>
   
       <!-- Episode selection dropdown -->
       <% if (season) { %>
         <form id="episodeForm" action="/watch/tv/<%= tvshow.id %>" method="GET">
           <input type="hidden" name="season" value="<%= season.season_number %>">
-          <label for="episodeSelect"></label>
-          <select id="episodeSelect" name="episode" onchange="document.getElementById('episodeForm').submit();">
+          <label class="episode-s" for="episodeSelect"></label>
+          <select class="season-select" id="episodeSelect" name="episode" onchange="document.getElementById('episodeForm').submit();">
             <% season.episodes.forEach(episodeOption => { %>
               <option value="<%= episodeOption.episode_number %>" <%= episode && episodeOption.episode_number === episode.episode_number ? 'selected' : '' %>>
                 Episode <%= episodeOption.episode_number %>: <%= episodeOption.name %>

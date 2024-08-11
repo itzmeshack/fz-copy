@@ -915,7 +915,7 @@ top: -1em;
 }
 .recommendations-container{
   display: grid;
-  grid-template-columns: repeat(4, 4fr);
+  grid-template-columns: repeat(3, 4fr);
   gap: 6px ;
 
   
