@@ -1,4 +1,5 @@
-
+/** pleae this file is very important its holds the 
+ * fuctionality to register, slide button etc you can find more in the code  */
 
 let allmenu = document.getElementById("sidemenu");
 
