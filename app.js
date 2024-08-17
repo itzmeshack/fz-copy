@@ -747,12 +747,11 @@ app.get("/movies", checkAuthenticated, cache(cacheDuration), async (req, res) =>
 const urlActionTVShows = `${Base_URL}/discover/tv?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&with_genres=10759&first_air_date.gte=2015-01-01&first_air_date.lte=2023-12-31`;
 const urlActionAdventureTVShows = `${Base_URL}/discover/tv?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&with_genres=10759&first_air_date.gte=2015-01-01&first_air_date.lte=2023-12-31`;
 const urlMysteryTVShows = `${Base_URL}/discover/tv?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&with_genres=9648&first_air_date.gte=2015-01-01&first_air_date.lte=2023-12-31`;
-const urlSciFiHorrorTVShows = `${Base_URL}/trending/tv/day?api_key=${API_KEY}&language=en-US&page=1`;
-const urlKDramaTVShows = `${Base_URL}/discover/tv?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&with_genres=18&first_air_date.gte=2015-01-01&first_air_date.lte=2023-12-31`;
+const urlSciFiHorrorTVShows = `${Base_URL}/discover/tv?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&with_genres=10768&first_air_date.gte=2015-01-01&first_air_date.lte=2023-12-31`;
+const urlKDramaTVShows = `${Base_URL}/discover/tv?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&with_genres=18&with_original_language=ko&first_air_date.gte=2015-01-01&first_air_date.lte=2023-12-31`;
 const urlAfricaTVShows = `${Base_URL}/search/tv?api_key=${API_KEY}&query=Africa`;
 const urlDarkDramaTVShows = `${Base_URL}/search/tv?api_key=${API_KEY}&query=Dark`;
 const urlKidsTVShows = `${Base_URL}/discover/tv?api_key=${API_KEY}&language=en-US&sort_by=popularity.desc&with_genres=10762&first_air_date.gte=2015-01-01&first_air_date.lte=2023-12-31`;
-
 
 
 
