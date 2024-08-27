@@ -171,9 +171,15 @@
               <a href="/watch/movie/<%= item.movieId %>" style="text-decoration: none; color: white; font-family: 'Clash Display', sans-serif; font-size: 20px;">
                 <img class="all-fav-img" src="https://image.tmdb.org/t/p/original/<%= item.poster_path %>" alt="<%= item.title %> poster" onmouseover="this.style.filter = 'brightness(60%)';" onmouseout="this.style.filter = 'brightness(100%)';">
               </a>
+
+              <a href="/watch/movie/<%= item.movieId %>" style="text-decoration: none; ">
+
+
               <p class="all-text"><%= item.title %></p>
+
+            </a>
               <span class="all-bins-rev">
-                <i class="fa-regular fa-trash-can" style="color: red; cursor: pointer;" onclick="removeFromFavorites('movie', '<%= item.movieId %>')"></i>
+                <button class="del-btn" onclick="removeFromFavorites('movie', '<%= item.movieId %>')">REMOVE</button>
               </span>
             </div>
           <% } %>
