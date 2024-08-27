@@ -1030,6 +1030,28 @@ app.delete('/remove-from-favorites/movie/:movieId', checkAuthenticated, async (r
 });
 
 
+
+
+
+
+app.delete('/remove-from-favorites/tv/:tvId', checkAuthenticated, async (req, res) => {
+  const tvId = req.params.tvId;
+  const userId = req.user.id;
+
+  try {
+    const result = await Favourite.deleteOne({ userId, tvId });
+    if (result.deletedCount > 0) {
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ success: false, message: 'Favorite not found' });
+    }
+  } catch (error) {
+    console.error('Error removing favorite:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
 /*
 app.delete('/remove-from-favorites/:type/:id', checkAuthenticated, async (req, res) => {
   const { type, id } = req.params;
