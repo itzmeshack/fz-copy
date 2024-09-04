@@ -392,7 +392,7 @@ app.get("/home",   checkAuthenticated, cache(cacheDuration), async (req, res) =>
     const animeMoviesWithQuality = applyQuality(animeData.results);
 
     if (data.results.length > 0) {
-      movies = moviesWithQuality[0];
+      movies = moviesWithQuality[2];
       const releaseYear = data.results[1].release_date.split("-");
       res.render("home.ejs", {
         releaseYear,
