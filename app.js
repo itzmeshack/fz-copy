@@ -132,6 +132,10 @@ const User = require('./api/user');
 const Favourite = require('./api/favourite');
 
 
+
+
+
+
 //for geting movies details
 //const  fetchmovies = require('./movieServer');
 
@@ -193,8 +197,10 @@ app.use(flash());
 
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://elsawilom:Omonzogbe2004.@cluster0.byvppgq.mongodb.net/', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
+  //useNewUrlParser: true,
+  //useUnifiedTopology: true/** no need for this because it has already been updated in later version */
+
+
 }).then(() => {
   console.log('Connected to MongoDB');
 }).catch((err) => {
@@ -392,7 +398,7 @@ app.get("/home",   checkAuthenticated, cache(cacheDuration), async (req, res) =>
     const animeMoviesWithQuality = applyQuality(animeData.results);
 
     if (data.results.length > 0) {
-      movies = moviesWithQuality[5];
+      movies = moviesWithQuality[0];
       const releaseYear = data.results[1].release_date.split("-");
       res.render("home.ejs", {
         releaseYear,
